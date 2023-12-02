@@ -72,3 +72,35 @@ func main() {
     app.Listen(":8080")
 }
 ```
+
+## 📓 Database
+
+```go
+func main() {
+    godotenv.Load()
+
+    // Dialector
+    dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+        os.Getenv("DB_USER"),
+        os.Getenv("DB_PASSWORD"),
+        os.Getenv("DB_HOST"),
+        os.Getenv("DB_PORT"),
+        os.Getenv("DB_NAME"),
+    )
+    dialector := mysql.Open(dns)
+    
+    // Database
+    db, err := gopeach.NewDatabase(dialector)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
+    err = db.Migrate(
+        models.MyModelTest{},
+        // ...
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+}
+```
