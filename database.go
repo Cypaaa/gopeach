@@ -4,25 +4,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// Driver interface, required to create a new database connection
-// could be mysql, postgres, sqlite, etc... Or even custom ones
-type Driver interface {
-	New() gorm.Dialector
-	Open(dns string) gorm.Dialector
-}
-
 // Database struct
 type Database struct {
-	conn   *gorm.DB
-	dns    string
-	driver Driver
+	conn      *gorm.DB
+	dialector gorm.Dialector
 }
 
 // NewDatabase creates a new database connection
-func NewDatabase(driver Driver, dns string) (*Database, error) {
+func NewDatabase(dialector gorm.Dialector) (*Database, error) {
 	db := &Database{
-		dns:    dns,
-		driver: driver,
+		dialector: dialector,
 	}
 	err := db.Init()
 	return db, err
@@ -35,7 +26,7 @@ func (d *Database) Conn() *gorm.DB {
 
 // Init initializes the database connection
 func (d *Database) Init() error {
-	conn, err := gorm.Open(d.driver.Open(d.dns), &gorm.Config{})
+	conn, err := gorm.Open(d.dialector, &gorm.Config{})
 	if err != nil {
 		return err
 	}
