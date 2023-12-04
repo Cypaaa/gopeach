@@ -10,13 +10,9 @@ import (
 // Generate generates a JWT token. It takes a jwtSecretKey string and a struct (interface{})
 // jwtSecretKey must be EdDSA private key
 // and returns a token and an error.
-func GenerateJWT(jwtSecretKey ed25519.PrivateKey, i interface{}) (string, error) {
+func GenerateJWT(jwtSecretKey ed25519.PrivateKey, mc jwtv5.MapClaims) (string, error) {
 	token := jwtv5.New(jwtv5.SigningMethodEdDSA)
-	mc := token.Claims.(jwtv5.MapClaims)
-	v := reflect.ValueOf(i)
-	for i := 0; i < v.NumField(); i++ {
-		mc[v.Type().Field(i).Name] = v.Field(i).Interface()
-	}
+	token.Claims = mc
 	return token.SignedString(jwtSecretKey)
 }
 
