@@ -2,7 +2,6 @@ package gopeach
 
 import (
 	"crypto/ed25519"
-	"reflect"
 
 	jwtv5 "github.com/golang-jwt/jwt/v5"
 )
